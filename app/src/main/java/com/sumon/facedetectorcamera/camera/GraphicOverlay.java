@@ -1,9 +1,11 @@
 package com.sumon.facedetectorcamera.camera;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -123,6 +125,16 @@ public class GraphicOverlay extends View {
         postInvalidate();
     }
 
+
+    private Canvas temp;
+    private Paint paint;
+    private Paint p = new Paint();
+    private Paint transparentPaint;
+
+    private void init() {
+
+    }
+
     /**
      * Draws the overlay with its associated graphic objects.
      */
@@ -136,12 +148,24 @@ public class GraphicOverlay extends View {
                 mHeightScaleFactor = (float) canvas.getHeight() / (float) mPreviewHeight;
             }
 
-            Paint mBoxPaint = new Paint();
-            mBoxPaint.setColor(Color.parseColor("#03DAC5"));
-            mBoxPaint.setStyle(Paint.Style.STROKE);
-            mBoxPaint.setStrokeWidth(10);
+            Bitmap bitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+            temp = new Canvas(bitmap);
+            paint = new Paint();
+            paint.setColor(0xcc000000);
+            transparentPaint = new Paint();
+            transparentPaint.setColor(getResources().getColor(android.R.color.transparent));
+            transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
-            canvas.drawCircle(canvas.getWidth()/2, canvas.getHeight()/2, 400, mBoxPaint);
+            temp.drawRect(0, 0, temp.getWidth(), temp.getHeight(), paint);
+            temp.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 400, transparentPaint);
+            canvas.drawBitmap(bitmap, 0, 0, p);
+
+//            Paint mBoxPaint = new Paint();
+//            mBoxPaint.setColor(Color.parseColor("#03DAC5"));
+//            mBoxPaint.setStyle(Paint.Style.STROKE);
+//            mBoxPaint.setStrokeWidth(10);
+//
+//            canvas.drawCircle(canvas.getWidth()/2, canvas.getHeight()/2, 400, mBoxPaint);
 
             for (Graphic graphic : mGraphics) {
                 graphic.draw(canvas);
